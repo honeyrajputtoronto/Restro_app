@@ -6,10 +6,21 @@ class UserManager(BaseUserManager):
 
     def create_user(self, email, password=None, **extra_fields):
         """create, save and return a user. """
+        if not email:
+            raise ValueError('User should enter an email address. ')
         user = self.model(email=self.normalize_email(email), **extra_fields)
         user.set_password(password)
-        user.save(self._db)
+        user.save(using=self._db)
         return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        """Create a super user. """
+        user = self.create_user(email, password)
+        user.is_staff = True
+        user.is_superuser = True
+        user.save(using=self._db)
+        return user
+
 
 # AbstractBaseUser - provides the features for authentication
 # PermissionMizin - support for django permission system
